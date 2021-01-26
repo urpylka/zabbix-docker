@@ -14,16 +14,16 @@ metadata:
   namespace: zabbix
 spec:
   ports:
-  - port: 80
-    targetPort: 8080
-    name: web-http
-  - port: 443
-    targetPort: 8443
-    name: web-https
+    - port: 80
+      targetPort: 8080
+      name: web-http
+    - port: 443
+      targetPort: 8443
+      name: web-https
   selector:
     name: zabbix-web
   externalIPs:
-  - <Specify external IP here>
+    - <Specify external IP here>
 ---
 apiVersion: v1
 kind: Service
@@ -35,9 +35,9 @@ metadata:
   namespace: zabbix
 spec:
   ports:
-  - port: 3306
-    targetPort: 3306
-    name: mysql-server
+    - port: 3306
+      targetPort: 3306
+      name: mysql-server
   selector:
     name: mysql-server
 ---
@@ -50,17 +50,17 @@ metadata:
   namespace: zabbix
 spec:
   ports:
-  - port: 10051
-    targetPort: 10051
-    name: zabbix-trapper
-  - port: 162
-    targetPort: 1162
-    protocol: UDP
-    name: snmp-trap
+    - port: 10051
+      targetPort: 10051
+      name: zabbix-trapper
+    - port: 162
+      targetPort: 1162
+      protocol: UDP
+      name: snmp-trap
   selector:
     name: zabbix-server
   externalIPs:
-  - <Specify external IP here>
+    - <Specify external IP here>
 ---
 apiVersion: v1
 kind: Service
@@ -71,13 +71,13 @@ metadata:
   namespace: zabbix
 spec:
   ports:
-  - port: 10051
-    targetPort: 10051
-    name: zabbix-trapper
-  - port: 162
-    targetPort: 1162
-    protocol: UDP
-    name: snmp-trap
+    - port: 10051
+      targetPort: 10051
+      name: zabbix-trapper
+    - port: 162
+      targetPort: 1162
+      protocol: UDP
+      name: snmp-trap
   selector:
     name: zabbix-proxy-sqlite3
 ---
@@ -90,13 +90,13 @@ metadata:
   namespace: zabbix
 spec:
   ports:
-  - port: 10051
-    targetPort: 10051
-    name: zabbix-trapper
-  - port: 162
-    targetPort: 1162
-    protocol: UDP
-    name: snmp-trap
+    - port: 10051
+      targetPort: 10051
+      name: zabbix-trapper
+    - port: 162
+      targetPort: 1162
+      protocol: UDP
+      name: snmp-trap
   selector:
     name: zabbix-proxy-mysql
 ---
@@ -109,9 +109,9 @@ metadata:
   namespace: zabbix
 spec:
   ports:
-  - port: 10052
-    targetPort: 10052
-    name: zabbix-jmx
+    - port: 10052
+      targetPort: 10052
+      name: zabbix-jmx
   selector:
     name: zabbix-java-gateway
 ---
@@ -124,9 +124,9 @@ metadata:
   namespace: zabbix
 spec:
   ports:
-  - port: 10050
-    targetPort: 10050
-    name: zabbix-agent
+    - port: 10050
+      targetPort: 10050
+      name: zabbix-agent
   selector:
     name: zabbix-agent
 ---
@@ -151,17 +151,17 @@ spec:
           image: zabbix/zabbix-web-nginx-mysql:alpine-5.2-latest
           imagePullPolicy: Always
           ports:
-          - containerPort: 8080
-            name: web-http
-          - containerPort: 8443
-            name: web-https
+            - containerPort: 8080
+              name: web-http
+            - containerPort: 8443
+              name: web-https
           resources:
-           limits:
-            cpu: 200m
-            memory: 400Mi
-           requests:
-            cpu: 200m
-            memory: 400Mi
+            limits:
+              cpu: 200m
+              memory: 400Mi
+            requests:
+              cpu: 200m
+              memory: 400Mi
           livenessProbe:
             httpGet:
               path: /
@@ -183,35 +183,35 @@ spec:
             successThreshold: 1
             failureThreshold: 5
           env:
-          - name: ZBX_SERVER_NAME
-            value: "Zabbix kubernetes"
-          - name: PHP_TZ
-            value: "Europe/Riga"
-          - name: MYSQL_USER
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-zbx-user
-          - name: MYSQL_PASSWORD
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-zbx-pass
-          - name: MYSQL_ROOT_PASSWORD
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-root-pass
-          - name: MYSQL_DATABASE
-            value: "zabbix"
+            - name: ZBX_SERVER_NAME
+              value: "Zabbix kubernetes"
+            - name: PHP_TZ
+              value: "Europe/Riga"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-zbx-user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-zbx-pass
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-root-pass
+            - name: MYSQL_DATABASE
+              value: "zabbix"
           volumeMounts:
-          - name: zabbix-web-ssl
-            mountPath: /etc/ssl/nginx
-            readOnly: true
+            - name: zabbix-web-ssl
+              mountPath: /etc/ssl/nginx
+              readOnly: true
       volumes:
-       - hostPath:
-          path: /home/dotneft/zbx/zbx_env/etc/ssl/nginx/
-         name: zabbix-web-ssl
+        - hostPath:
+            path: /home/dotneft/zbx/zbx_env/etc/ssl/nginx/
+          name: zabbix-web-ssl
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -231,37 +231,37 @@ spec:
         tier: mysql-server
     spec:
       volumes:
-       - name: zabbix-mysql-data
-         persistentVolumeClaim:
-          claimName: zabbix-mysql-data-claim
+        - name: zabbix-mysql-data
+          persistentVolumeClaim:
+            claimName: zabbix-mysql-data-claim
       containers:
         - name: zabbix-db
           image: mysql:5.7
           ports:
-          - containerPort: 3306
-            name: mysql
+            - containerPort: 3306
+              name: mysql
           env:
-          - name: MYSQL_USER
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-zbx-user
-          - name: MYSQL_PASSWORD
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-zbx-pass
-          - name: MYSQL_ROOT_PASSWORD
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-root-pass
-          - name: MYSQL_DATABASE
-            value: "zabbix"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-zbx-user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-zbx-pass
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-root-pass
+            - name: MYSQL_DATABASE
+              value: "zabbix"
           volumeMounts:
-           - mountPath: "/var/lib/mysql/"
-             name: zabbix-mysql-data
-             readOnly: false
+            - mountPath: "/var/lib/mysql/"
+              name: zabbix-mysql-data
+              readOnly: false
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -285,9 +285,9 @@ spec:
           image: zabbix/zabbix-server-mysql:alpine-5.2-latest
           imagePullPolicy: Always
           ports:
-          - containerPort: 10051
-            protocol: TCP
-            name: zabbix-trapper
+            - containerPort: 10051
+              protocol: TCP
+              name: zabbix-trapper
           readinessProbe:
             tcpSocket:
               port: zabbix-trapper
@@ -299,52 +299,52 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
           env:
-          - name: MYSQL_USER
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-zbx-user
-          - name: MYSQL_PASSWORD
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-zbx-pass
-          - name: MYSQL_ROOT_PASSWORD
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-root-pass
-          - name: MYSQL_DATABASE
-            value: "zabbix"
-          - name: ZBX_JAVAGATEWAY_ENABLE
-            value: "true"
-          - name: ZBX_STARTJAVAPOLLERS
-            value: "5"
-          - name: ZBX_ENABLE_SNMP_TRAPS
-            value: "true"
-          - name: ZBX_STARTPROXYPOLLERS
-            value: "5"
-          - name: ZBX_PROXYCONFIGFREQUENCY
-            value: "60"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-zbx-user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-zbx-pass
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-root-pass
+            - name: MYSQL_DATABASE
+              value: "zabbix"
+            - name: ZBX_JAVAGATEWAY_ENABLE
+              value: "true"
+            - name: ZBX_STARTJAVAPOLLERS
+              value: "5"
+            - name: ZBX_ENABLE_SNMP_TRAPS
+              value: "true"
+            - name: ZBX_STARTPROXYPOLLERS
+              value: "5"
+            - name: ZBX_PROXYCONFIGFREQUENCY
+              value: "60"
           volumeMounts:
-          - name: zabbix-db-storage
-            mountPath: /var/lib/zabbix/snmptraps/
-            readOnly: true
+            - name: zabbix-db-storage
+              mountPath: /var/lib/zabbix/snmptraps/
+              readOnly: true
         - name: zabbix-snmptraps
           image: zabbix/zabbix-snmptraps:alpine-5.2-latest
           imagePullPolicy: Always
           ports:
-          - containerPort: 1162
-            protocol: UDP
-            name: snmp-trap
+            - containerPort: 1162
+              protocol: UDP
+              name: snmp-trap
           volumeMounts:
-          - name: zabbix-db-storage
-            mountPath: /var/lib/zabbix/snmptraps/
-            readOnly: false
+            - name: zabbix-db-storage
+              mountPath: /var/lib/zabbix/snmptraps/
+              readOnly: false
       volumes:
-       - hostPath:
-          path: /zabbix/
-         name: zabbix-db-storage
+        - hostPath:
+            path: /zabbix/
+          name: zabbix-db-storage
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -367,16 +367,16 @@ spec:
           image: zabbix/zabbix-proxy-sqlite3:alpine-5.2-latest
           imagePullPolicy: Always
           ports:
-          - containerPort: 10051
-            protocol: TCP
-            name: zabbix-trapper
+            - containerPort: 10051
+              protocol: TCP
+              name: zabbix-trapper
           env:
-          - name: ZBX_HOSTNAME
-            value: "zabbix-proxy-passive"
-          - name: ZBX_CONFIGFREQUENCY
-            value: "60"
-          - name: ZBX_PROXYMODE
-            value: "1"
+            - name: ZBX_HOSTNAME
+              value: "zabbix-proxy-passive"
+            - name: ZBX_CONFIGFREQUENCY
+              value: "60"
+            - name: ZBX_PROXYMODE
+              value: "1"
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -399,27 +399,27 @@ spec:
           image: zabbix/zabbix-proxy-mysql:alpine-5.2-latest
           imagePullPolicy: Always
           ports:
-          - containerPort: 10051
-            protocol: TCP
-            name: zabbix-trapper
+            - containerPort: 10051
+              protocol: TCP
+              name: zabbix-trapper
           env:
-          - name: MYSQL_USER
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-zbx-user
-          - name: MYSQL_PASSWORD
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-zbx-pass
-          - name: MYSQL_ROOT_PASSWORD
-            valueFrom:
-             secretKeyRef:
-              name: db-secret
-              key: db-root-pass
-          - name: MYSQL_DATABASE
-            value: "zabbix_proxy"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-zbx-user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-zbx-pass
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-root-pass
+            - name: MYSQL_DATABASE
+              value: "zabbix_proxy"
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -442,12 +442,12 @@ spec:
           image: zabbix/zabbix-java-gateway:alpine-5.2-latest
           imagePullPolicy: Always
           ports:
-          - containerPort: 10052
-            protocol: TCP
-            name: zabbix-jmx
+            - containerPort: 10052
+              protocol: TCP
+              name: zabbix-jmx
           env:
-          - name: ZBX_TIMEOUT
-            value: "5"
+            - name: ZBX_TIMEOUT
+              value: "5"
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -459,12 +459,12 @@ metadata:
   namespace: zabbix
 spec:
   selector:
-   matchLabels:
-    name: zabbix-agent
+    matchLabels:
+      name: zabbix-agent
   updateStrategy:
-   type: RollingUpdate
-   rollingUpdate:
-    maxUnavailable: 1
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -476,24 +476,24 @@ spec:
           image: zabbix/zabbix-agent:alpine-5.2-latest
           imagePullPolicy: Always
           resources:
-           limits:
-            cpu: 100m
-            memory: 54Mi
-           requests:
-            cpu: 100m
-            memory: 54Mi
+            limits:
+              cpu: 100m
+              memory: 54Mi
+            requests:
+              cpu: 100m
+              memory: 54Mi
           ports:
-          - containerPort: 10050
-            name: zabbix-agent
+            - containerPort: 10050
+              name: zabbix-agent
           env:
-          - name: ZBX_SERVER_HOST
-            value: "zabbix-server"
-          - name: ZBX_PASSIVE_ALLOW
-            value: "true"
-          - name: ZBX_STARTAGENTS
-            value: "3"
-          - name: ZBX_TIMEOUT
-            value: "10"
+            - name: ZBX_SERVER_HOST
+              value: "zabbix-server"
+            - name: ZBX_PASSIVE_ALLOW
+              value: "true"
+            - name: ZBX_STARTAGENTS
+              value: "3"
+            - name: ZBX_TIMEOUT
+              value: "10"
           securityContext:
             privileged: true
 ---
@@ -510,10 +510,10 @@ spec:
   minReplicas: 1
   maxReplicas: 5
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageUtilization: 70
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 70
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -546,15 +546,15 @@ spec:
 apiVersion: v1
 kind: List
 metadata:
- namespace: zabbix
+  namespace: zabbix
 items:
   - apiVersion: v1
     kind: Secret
     type: Opaque
     metadata:
-     name: db-secret
-     namespace: zabbix
+      name: db-secret
+      namespace: zabbix
     data:
-     db-root-pass: "c29tZV90ZXN0X3Bhc3M="
-     db-zbx-user: "emFiYml4"
-     db-zbx-pass: "emJ4X3Bhc3N3b3Jk"
+      db-root-pass: "c29tZV90ZXN0X3Bhc3M="
+      db-zbx-user: "emFiYml4"
+      db-zbx-pass: "emJ4X3Bhc3N3b3Jk"
